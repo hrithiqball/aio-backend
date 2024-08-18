@@ -7,6 +7,7 @@ import { connectToMongo } from './libs/mongo'
 import prisma from './libs/prisma'
 import { Context } from './types/context'
 import bookController from './controllers/mongo/bookController'
+import { queueController } from './controllers/queueController'
 
 const PORT = env.PORT
 
@@ -28,6 +29,7 @@ const app = new Elysia()
     })
   )
   .use(bookController)
+  .use(queueController)
   .listen(PORT)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
