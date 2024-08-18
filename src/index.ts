@@ -4,6 +4,7 @@ import { apollo } from '@elysiajs/apollo'
 import { typeDefs, resolvers } from './controllers/graphqlController'
 import { Context } from './types/context'
 import prisma from './libs/prisma'
+import { cors } from '@elysiajs/cors'
 
 const PORT = env.PORT
 
@@ -13,13 +14,13 @@ if (!PORT) {
 }
 
 const app = new Elysia()
+  .use(cors())
   .get('/', () => 'Hello Elysia')
   .use(
     apollo({
       typeDefs,
       resolvers,
-      context: async (): Promise<Context> => ({ prisma }),
-      enablePlayground: true
+      context: async (): Promise<Context> => ({ prisma })
     })
   )
   .listen(PORT)
