@@ -9,6 +9,7 @@ import { apollo } from '@elysiajs/apollo'
 import { cors } from '@elysiajs/cors'
 import { env } from 'bun'
 import { Elysia } from 'elysia'
+import { graphqlAuthMiddleware } from './middleware/auth'
 
 const PORT = env.PORT
 
@@ -26,7 +27,10 @@ const app = new Elysia()
     apollo({
       typeDefs,
       resolvers,
-      context: async (): Promise<Context> => ({ prisma })
+      context: async ({ request }) => {
+        const user = await graphqlAuthMiddleware(request)
+        return { prisma, request, user }
+      }
     })
   )
   .use(authController)

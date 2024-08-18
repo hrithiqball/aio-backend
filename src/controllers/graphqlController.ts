@@ -37,6 +37,9 @@ export const resolvers = {
       })
     },
     users: async (_parent: any, _args: any, context: Context) => {
+      if (!context.user) {
+        throw new Error('Not authorized')
+      }
       return context.prisma.user.findMany()
     },
     posts: async (_parent: any, _args: any, context: Context) => {
