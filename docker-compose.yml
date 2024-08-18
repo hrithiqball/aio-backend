@@ -9,9 +9,35 @@ services:
     networks:
       - redis-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xmx1g -Xms1g
+    ports:
+      - '9200:9200'
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - elastic-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.5.0
+    container_name: kibana
+    ports:
+      - '5601:5601'
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic-network
+
 volumes:
   redis-data:
+  elasticsearch-data:
 
 networks:
   redis-network:
+    driver: bridge
+  elastic-network:
     driver: bridge
