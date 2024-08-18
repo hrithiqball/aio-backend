@@ -3,13 +3,13 @@ import { gql } from '@elysiajs/apollo'
 
 export const typeDefs = gql`
   type User {
-    id: Int!
+    id: Int
     name: String
     email: String
   }
 
   type Post {
-    id: Int!
+    id: Int
     title: String
     content: String
     userId: Int
@@ -30,6 +30,11 @@ export const resolvers = {
   Query: {
     user: async (_parent: any, args: { id: number }, context: Context) => {
       const { id } = args
+
+      if (!context.user || context.user.id !== id) {
+        throw new Error('Not allowed')
+      }
+
       return context.prisma.user.findFirst({
         where: {
           id
