@@ -1,9 +1,10 @@
+import { authMiddleware } from '@/middleware/auth'
+import { createBookSchema, updateBookSchema } from '@/validation/bookSchema'
 import { Elysia } from 'elysia'
-import { db } from '../../libs/mongo'
-import { createBookSchema, updateBookSchema } from '../../validation/bookSchema'
 import { ObjectId } from 'mongodb'
+import { db } from '@/libs/mongo'
 
-const bookController = (app: Elysia) => {
+export const bookController = (app: Elysia) => {
   const booksCollection = db.collection('books')
 
   app.group('/api/books', (app) =>
@@ -17,10 +18,22 @@ const bookController = (app: Elysia) => {
         const result = await booksCollection.insertOne(parsed.data)
         return { success: true, id: result.insertedId }
       })
-      .get('/', async () => {
-        const books = await booksCollection.find().toArray()
-        return books
-      })
+      .get(
+        '/',
+        async () => {
+          const books = await booksCollection.find().toArray()
+          return books
+        },
+        {
+          beforeHandle: async (c) => {
+            await authMiddleware({
+              headers: c.headers,
+              set: { status: c.set.status, headers: c.set.headers },
+              request: c.request
+            })
+          }
+        }
+      )
       .get('/:id', async ({ params }) => {
         const book = await booksCollection.findOne({ _id: new ObjectId(params.id) })
         return book
@@ -42,5 +55,3 @@ const bookController = (app: Elysia) => {
 
   return app
 }
-
-export default bookController

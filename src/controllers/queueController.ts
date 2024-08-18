@@ -1,6 +1,6 @@
+import { queue } from '@/libs/queue'
+import { createJobSchema } from '@/validation/queueJob'
 import { Elysia } from 'elysia'
-import { queue } from '../libs/queue'
-import { createJobSchema } from '../validation/queueJob'
 
 export const queueController = (app: Elysia) => {
   app.group('/q', (app) =>

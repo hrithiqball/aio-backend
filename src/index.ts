@@ -1,13 +1,14 @@
+import { resolvers, typeDefs } from '@/controllers/graphqlController'
+import { bookController } from '@/controllers/mongo/bookController'
+import { queueController } from '@/controllers/queueController'
+import { authController } from '@/controllers/rest-pg/userController'
+import { connectToMongo } from '@/libs/mongo'
+import prisma from '@/libs/prisma'
+import { Context } from '@/types/context'
 import { apollo } from '@elysiajs/apollo'
 import { cors } from '@elysiajs/cors'
 import { env } from 'bun'
 import { Elysia } from 'elysia'
-import { resolvers, typeDefs } from './controllers/graphqlController'
-import { connectToMongo } from './libs/mongo'
-import prisma from './libs/prisma'
-import { Context } from './types/context'
-import bookController from './controllers/mongo/bookController'
-import { queueController } from './controllers/queueController'
 
 const PORT = env.PORT
 
@@ -28,6 +29,7 @@ const app = new Elysia()
       context: async (): Promise<Context> => ({ prisma })
     })
   )
+  .use(authController)
   .use(bookController)
   .use(queueController)
   .listen(PORT)

@@ -1,5 +1,5 @@
-import { MongoClient } from 'mongodb'
 import { env } from 'bun'
+import { MongoClient } from 'mongodb'
 
 const MONGO_URI = env.MONGO_URI
 
